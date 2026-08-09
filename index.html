@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description"
+        content="Super Mario Bros - A 2D platformer recreation built with HTML5 Canvas and Vanilla JS.">
+    <meta property="og:title" content="Super Mario Bros">
+    <meta property="og:description" content="Classic NES Super Mario Bros recreation.">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍄</text></svg>">
+    <title>Super Mario Bros — NES Edition | 2D Platformer</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div id="game-wrapper">
+        <div class="arcade-marquee">★ SUPER MARIO BROS — NES EDITION ★</div>
+
+        <div id="game-container">
+            <!-- HUD Header -->
+            <div id="hud-overlay">
+                <div class="hud-item">
+                    <span class="hud-label">MARIO</span>
+                    <span id="hud-score" class="hud-value">000000</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">TOP</span>
+                    <span id="hud-top" class="hud-value">000000</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">COIN</span>
+                    <span class="hud-value">🪙 <span id="hud-coins">00</span></span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">WORLD</span>
+                    <span id="hud-world" class="hud-value">1-1</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">TIME</span>
+                    <span id="hud-time" class="hud-value">400</span>
+                </div>
+            </div>
+
+            <!-- Canvas -->
+            <canvas id="gameCanvas" width="256" height="240"></canvas>
+
+            <!-- Title Screen -->
+            <div id="title-screen" class="screen active" onclick="event.stopPropagation();">
+                <h1 class="title-text">SUPER<br>MARIO BROS.</h1>
+                <p class="title-sub">© 1985 NINTENDO</p>
+
+                <div class="world-selector">
+                    <div class="world-card" onclick="event.stopPropagation();if(window.AudioSystem)window.AudioSystem.init();if(window.game){window.game.currentLevelIndex=0;window.game.world='1-1';window.game.startLevel();}">
+                        <span class="card-badge">PRESS 1</span>
+                        <div class="card-title">WORLD 1-1</div>
+                        <div class="card-desc">Overworld</div>
+                    </div>
+                    <div class="world-card" onclick="event.stopPropagation();if(window.AudioSystem)window.AudioSystem.init();if(window.game){window.game.currentLevelIndex=1;window.game.world='1-2';window.game.startLevel();}">
+                        <span class="card-badge">PRESS 2</span>
+                        <div class="card-title">WORLD 1-2</div>
+                        <div class="card-desc">Underground</div>
+                    </div>
+                    <div class="world-card" onclick="event.stopPropagation();if(window.AudioSystem)window.AudioSystem.init();if(window.game){window.game.currentLevelIndex=2;window.game.world='1-3';window.game.startLevel();}">
+                        <span class="card-badge">PRESS 3</span>
+                        <div class="card-title">WORLD 1-3</div>
+                        <div class="card-desc">Castle</div>
+                    </div>
+                </div>
+
+                <div class="controls-guide">
+                    ARROWS / WASD: MOVE &nbsp;|&nbsp; SPACE: JUMP &nbsp;|&nbsp; SHIFT: FIREBALL
+                </div>
+
+                <button class="start-btn" onclick="event.stopPropagation();if(window.AudioSystem)window.AudioSystem.init();if(window.game){window.game.resetGame();}">🎮 START GAME</button>
+                <p class="blink-text" style="margin-top:12px;">PRESS ENTER OR CLICK TO START</p>
+            </div>
+
+            <!-- Transition Screen -->
+            <div id="transition-screen" class="screen">
+                <div style="display:flex; flex-direction:column; align-items:center; gap:20px;">
+                    <h2 id="transition-world">WORLD 1-1</h2>
+                    <div style="display:flex; align-items:center; gap:12px; font-size: 14px;">
+                        <span>MARIO x</span><span id="transition-lives">3</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Over Screen -->
+            <div id="game-over-screen" class="screen">
+                <h2>GAME OVER</h2>
+                <p class="blink-text" style="margin-top: 20px;">PRESS ENTER TO TRY AGAIN</p>
+            </div>
+
+            <!-- Victory Screen -->
+            <div id="victory-screen" class="screen">
+                <h2>VICTORY!</h2>
+                <p>THANK YOU MARIO!<br>YOUR QUEST IS OVER.<br>YOU SAVED THE KINGDOM!</p>
+                <p class="blink-text" style="margin-top:25px;">PRESS ENTER FOR MAIN MENU</p>
+            </div>
+
+            <!-- Pause Screen -->
+            <div id="pause-screen" class="screen">
+                <h2 style="font-size: 28px; color: #f8b800; text-shadow: 3px 3px 0 #000;">PAUSED</h2>
+                <p style="font-size: 10px; margin-top: 15px; color: #fff;">PRESS ESC OR P TO RESUME</p>
+            </div>
+
+            <!-- Touch Controls -->
+            <div id="touch-controls">
+                <div class="touch-group left">
+                    <div class="touch-btn" id="btn-left">◀</div>
+                    <div class="touch-btn" id="btn-right">▶</div>
+                </div>
+                <div class="touch-group right">
+                    <div class="touch-btn" id="btn-b">B</div>
+                    <div class="touch-btn" id="btn-a">A</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Arcade Control Bar -->
+        <div class="arcade-toolbar">
+            <button id="audio-toggle" class="arcade-btn" onclick="if(window.AudioSystem){AudioSystem.toggleMute();const btn=document.getElementById('audio-toggle');btn.textContent=AudioSystem.muted?'🔇 AUDIO OFF':'🔊 AUDIO ON';btn.classList.toggle('muted',AudioSystem.muted);}">🔊 AUDIO ON</button>
+            <button class="arcade-btn" onclick="const container=document.getElementById('game-container');if(!document.fullscreenElement){container.requestFullscreen().catch(e=>{});}else{document.exitFullscreen();}">⛶ FULLSCREEN</button>
+        </div>
+    </div>
+
+    <footer>
+        Built with HTML5 Canvas & Vanilla JS &nbsp;|&nbsp; Super Mario Bros. NES Recreation
+    </footer>
+
+    <!-- Scripts in correct dependency order -->
+    <script src="js/constants.js"></script>
+    <script src="js/input.js"></script>
+    <script src="js/sprites.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/blocks.js"></script>
+    <script src="js/items.js"></script>
+    <script src="js/enemies.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/level1.js"></script>
+    <script src="js/level2.js"></script>
+    <script src="js/level3.js"></script>
+    <script src="js/level.js"></script>
+    <script src="js/game.js"></script>
+</body>
+
+</html>
