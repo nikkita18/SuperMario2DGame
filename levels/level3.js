@@ -53,6 +53,7 @@ for (let x = 96; x <= 106; x += 3) {
 for (let y = 2; y <= 8; y++) {
     level3Map[y][118] = TILES.CASTLE_BRICK;
 }
+<<<<<<< HEAD
 // Step platforms to climb or pass under
 level3Map[10][120] = TILES.CASTLE_BRICK;
 level3Map[10][121] = TILES.CASTLE_BRICK;
@@ -60,6 +61,9 @@ level3Map[7][122] = TILES.CASTLE_BRICK;
 level3Map[7][123] = TILES.CASTLE_BRICK;
 
 for (let y = 2; y <= 8; y++) {
+=======
+for (let y = 6; y <= 12; y++) {
+>>>>>>> 2e2ca2d86bf90a836096171f388d07ca26ccbd0c
     level3Map[y][124] = TILES.CASTLE_BRICK;
 }
 
