@@ -16,6 +16,8 @@ class Player {
         this.invincibleTimer = 0;
         this.starTimer = 0;
         this.stompCombo = 0;
+        this.coyoteTimer = 0;
+        this.jumpBufferTimer = 0;
     }
 
     update(dt, level, game) {
@@ -31,6 +33,19 @@ class Player {
                 const track = game.currentLevelIndex === 1 ? 'underground' : (game.currentLevelIndex === 2 ? 'castle' : 'overworld');
                 AudioSystem.startMusic(track);
             }
+        }
+
+        // Coyote Time & Jump Buffer timers
+        if (this.grounded) {
+            this.coyoteTimer = 6;
+        } else if (this.coyoteTimer > 0) {
+            this.coyoteTimer--;
+        }
+
+        if (Input.isJustPressed('jump')) {
+            this.jumpBufferTimer = 6;
+        } else if (this.jumpBufferTimer > 0) {
+            this.jumpBufferTimer--;
         }
 
         // Horizontal Movement
@@ -71,10 +86,12 @@ class Player {
         if (this.vx > maxSpeed) this.vx = maxSpeed;
         if (this.vx < -maxSpeed) this.vx = -maxSpeed;
 
-        // Jump
-        if (Input.isJustPressed('jump') && this.grounded) {
+        // Jump Execution (with Coyote time & Jump buffering)
+        if (this.jumpBufferTimer > 0 && (this.grounded || this.coyoteTimer > 0)) {
             this.vy = PLAYER_JUMP_FORCE;
             this.grounded = false;
+            this.coyoteTimer = 0;
+            this.jumpBufferTimer = 0;
             if (typeof AudioSystem !== 'undefined') AudioSystem.playJump();
         }
 
@@ -87,7 +104,7 @@ class Player {
         this.vy += GRAVITY;
         if (this.vy > PLAYER_MAX_FALL_SPEED) this.vy = PLAYER_MAX_FALL_SPEED;
 
-        // Fireball Shooting (Fire Mario only — on Shift/Z press)
+        // Fireball Shooting (Fire Mario only — on Shift/Z/Action press)
         if (this.power === POWER.FIRE && Input.isJustPressed('action') && game && game.spawnFireball) {
             game.spawnFireball(
                 this.facing === 1 ? this.x + this.width : this.x - 6,
@@ -144,15 +161,32 @@ class Player {
         const leftCol = Math.floor(this.x / TILE_SIZE);
         const rightCol = Math.floor((this.x + this.width - 0.01) / TILE_SIZE);
 
-        for (let c = leftCol; c <= rightCol; c++) {
-            if (this.vy > 0 && level.isSolid(c, bottomRow)) {
-                this.y = bottomRow * TILE_SIZE - this.height;
-                this.vy = 0;
-                this.grounded = true;
-            } else if (this.vy < 0 && level.isSolid(c, topRow)) {
+        if (this.vy > 0) {
+            for (let c = leftCol; c <= rightCol; c++) {
+                if (level.isSolid(c, bottomRow)) {
+                    this.y = bottomRow * TILE_SIZE - this.height;
+                    this.vy = 0;
+                    this.grounded = true;
+                    break;
+                }
+            }
+        } else if (this.vy < 0) {
+            // Check center of Mario first to determine which block was bumped
+            const centerCol = Math.floor((this.x + this.width / 2) / TILE_SIZE);
+            let hitTargetCol = null;
+
+            if (level.isSolid(centerCol, topRow)) {
+                hitTargetCol = centerCol;
+            } else if (level.isSolid(leftCol, topRow)) {
+                hitTargetCol = leftCol;
+            } else if (level.isSolid(rightCol, topRow)) {
+                hitTargetCol = rightCol;
+            }
+
+            if (hitTargetCol !== null) {
                 this.y = (topRow + 1) * TILE_SIZE;
                 this.vy = 0;
-                game.hitBlock(c, topRow);
+                game.hitBlock(hitTargetCol, topRow);
             }
         }
     }

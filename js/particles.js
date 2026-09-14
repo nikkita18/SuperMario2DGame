@@ -3,7 +3,7 @@ class ParticleSystemManager {
         this.particles = [];
     }
 
-    spawnBrickDebris(x, y) {
+    spawnBrickDebris(x, y, color = '#c84c0c') {
         const velocities = [
             { vx: -2, vy: -4 },
             { vx: 2, vy: -4 },
@@ -17,7 +17,7 @@ class ParticleSystemManager {
                 vx: v.vx,
                 vy: v.vy,
                 size: 4,
-                color: '#c84c0c',
+                color: color,
                 life: 30,
                 type: 'brick'
             });
@@ -146,3 +146,4 @@ class ParticleSystemManager {
 }
 
 const ParticleSystem = new ParticleSystemManager();
+window.ParticleSystem = ParticleSystem;

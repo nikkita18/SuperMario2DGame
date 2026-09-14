@@ -105,7 +105,7 @@ class Game {
         this.timeAccumulator = 0;
         
         // Flagpole variables
-        this.flagpoleCol = this.currentLevelIndex === 2 ? 140 : 198;
+        this.flagpoleCol = this.currentLevelIndex === 2 ? 144 : 198;
         this.flagX = this.flagpoleCol * TILE_SIZE - 8;
         this.flagY = 3 * TILE_SIZE;
         this.levelCompletePhase = 0;
@@ -537,12 +537,14 @@ class Game {
             this.items.push(new Item(tx * TILE_SIZE, ty * TILE_SIZE, itemType));
             if (typeof AudioSystem !== 'undefined') AudioSystem.playBump();
 
-        } else if (tile === TILES.BRICK) {
+        } else if (tile === TILES.BRICK || tile === TILES.UNDERGROUND_BRICK) {
+            const isUnderground = (tile === TILES.UNDERGROUND_BRICK);
+            const debrisColor = isUnderground ? '#0070e8' : '#c84c0c';
             if (this.player.power !== POWER.SMALL) {
                 // Big Mario breaks bricks
                 this.level.setTile(tx, ty, TILES.EMPTY);
                 if (typeof AudioSystem !== 'undefined') AudioSystem.playBreak();
-                if (typeof ParticleSystem !== 'undefined') ParticleSystem.spawnBrickDebris(tx * TILE_SIZE, ty * TILE_SIZE);
+                if (typeof ParticleSystem !== 'undefined') ParticleSystem.spawnBrickDebris(tx * TILE_SIZE, ty * TILE_SIZE, debrisColor);
                 this.score += SCORE_BRICK;
                 this.screenShake.timer = 5;
             } else {

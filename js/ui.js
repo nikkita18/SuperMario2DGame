@@ -58,15 +58,24 @@ class UIManager {
             const btn = document.getElementById(id);
             if (!btn) return;
             
-            btn.addEventListener('touchstart', (e) => {
-                e.preventDefault();
+            const press = (e) => {
+                if (e.cancelable) e.preventDefault();
+                if (window.AudioSystem) window.AudioSystem.init();
                 if (window.Input) window.Input.setKey(key, true);
-            }, {passive: false});
-            
-            btn.addEventListener('touchend', (e) => {
-                e.preventDefault();
+            };
+
+            const release = (e) => {
+                if (e && e.cancelable) e.preventDefault();
                 if (window.Input) window.Input.setKey(key, false);
-            }, {passive: false});
+            };
+
+            btn.addEventListener('touchstart', press, { passive: false });
+            btn.addEventListener('touchend', release, { passive: false });
+            btn.addEventListener('touchcancel', release, { passive: false });
+
+            btn.addEventListener('mousedown', press);
+            btn.addEventListener('mouseup', release);
+            btn.addEventListener('mouseleave', release);
         };
         
         bindTouch('btn-left', 'ArrowLeft');

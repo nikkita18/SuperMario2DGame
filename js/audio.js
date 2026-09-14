@@ -32,24 +32,27 @@ class AudioManager {
     _playTone(freq, type, duration, slide = 0) {
         if (!this.ctx || this.ctx.state === 'closed' || this.muted) return;
         try {
+            const now = this.ctx.currentTime;
             const osc = this.ctx.createOscillator();
             const gain = this.ctx.createGain();
             osc.type = type;
-            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-            if (slide !== 0 && freq + slide > 0) {
-                osc.frequency.exponentialRampToValueAtTime(freq + slide, this.ctx.currentTime + duration);
+            const startFreq = Math.max(1, freq);
+            osc.frequency.setValueAtTime(startFreq, now);
+            if (slide !== 0) {
+                const targetFreq = Math.max(1, startFreq + slide);
+                osc.frequency.exponentialRampToValueAtTime(targetFreq, now + duration);
             }
             
             // Clean gain envelope to prevent clicking
-            gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
             
             osc.connect(gain);
             gain.connect(this.ctx.destination);
-            osc.start();
-            osc.stop(this.ctx.currentTime + duration);
+            osc.start(now);
+            osc.stop(now + duration);
         } catch (e) {
-            // Silently swallow AudioContext autoplay policy errors
+            // Silently swallow AudioContext autoplay policy or ramp errors
         }
     }
 

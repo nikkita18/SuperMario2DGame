@@ -4,8 +4,8 @@ class InputManager {
         this.previousKeys = {};
 
         this.keyMap = {
-            'ArrowUp': 'up',
-            'w': 'up', 'W': 'up',
+            'ArrowUp': 'jump',
+            'w': 'jump', 'W': 'jump',
             'ArrowDown': 'down',
             's': 'down', 'S': 'down',
             'ArrowLeft': 'left',
@@ -13,10 +13,11 @@ class InputManager {
             'ArrowRight': 'right',
             'd': 'right', 'D': 'right',
             ' ': 'jump',
-            'ArrowUp': 'jump',
             'Shift': 'action',
             'z': 'action', 'Z': 'action',
             'x': 'action', 'X': 'action',
+            'j': 'jump', 'J': 'jump',
+            'k': 'action', 'K': 'action',
             'f': 'fire_cheat', 'F': 'fire_cheat',
             'Enter': 'start',
             'Escape': 'pause',

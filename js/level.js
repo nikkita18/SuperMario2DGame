@@ -40,12 +40,8 @@ class Level {
         const solids = [
             TILES.GROUND, TILES.BRICK, TILES.QUESTION_COIN, TILES.QUESTION_POWERUP,
             TILES.USED_BLOCK, TILES.PIPE_TL, TILES.PIPE_TR, TILES.PIPE_BL,
-<<<<<<< HEAD
             TILES.PIPE_BR, TILES.HARD_BLOCK, TILES.UNDERGROUND_BRICK, TILES.CASTLE_BRICK,
-            TILES.BRIDGE, TILES.AXE
-=======
-            TILES.PIPE_BR, TILES.HARD_BLOCK, TILES.UNDERGROUND_BRICK, TILES.CASTLE_BRICK
->>>>>>> 2e2ca2d86bf90a836096171f388d07ca26ccbd0c
+            TILES.BRIDGE
         ];
         return solids.includes(tile);
     }

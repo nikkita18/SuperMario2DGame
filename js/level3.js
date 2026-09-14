@@ -98,3 +98,4 @@ const level3 = {
         { x: 2020, y: 160, type: 'bowser' } // Bowser Boss on the bridge!
     ]
 };
+window.level3 = level3;

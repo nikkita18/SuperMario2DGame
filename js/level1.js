@@ -129,3 +129,4 @@ const level1 = {
         { x: 1700, y: 192, type: 'goomba' }
     ]
 };
+window.level1 = level1;

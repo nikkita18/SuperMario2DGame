@@ -95,3 +95,5 @@ const level2 = {
         { x: 1430, y: 192, type: 'goomba' }
     ]
 };
+window.level2 = level2;
+
